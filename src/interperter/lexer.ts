@@ -135,12 +135,6 @@ type Segment = {
     index: number,
 }
 
-type Intl = {
-    Segmenter: (locale: string, options: {granularity: string}) => {
-        segment: (text: string) => Segment[],
-    }
-}
-
 type ReturnType = {
     lex: () => Token[],
 }
