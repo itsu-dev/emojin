@@ -46,9 +46,10 @@ export default function Console({logs}: Props) {
 
     useEffect(() => {
         if (ref.current) {
-            const bb = ref.current.getBoundingClientRect();
-            ref.current.style.maxHeight = `${bb.height}px`;
-            console.log(bb, ref.current);
+            setTimeout(() => {
+                const bb = ref.current!.getBoundingClientRect();
+                ref.current!.style.maxHeight = `${bb.height}px`;
+            }, 100);
         }
     }, []);
 
