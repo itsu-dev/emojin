@@ -48,6 +48,7 @@ export default function Console({logs}: Props) {
         if (ref.current) {
             const bb = ref.current.getBoundingClientRect();
             ref.current.style.maxHeight = `${bb.height}px`;
+            console.log(bb, ref.current);
         }
     }, []);
 
