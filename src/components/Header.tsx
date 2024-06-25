@@ -26,7 +26,6 @@ const Nav = styled.nav`
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
         color: #4B5261;
     }
     a {
@@ -46,8 +45,7 @@ export default function Header() {
             <Title>&lt;😄&nbsp;/&gt; emojin Playground</Title>
             <Nav>
                 <ul>
-                    <li><a href="#">ヘルプ</a></li>
-                    <li><a href="#">GitHub</a></li>
+                    <li><a href="https://github.com/itsu-dev/emojin">GitHub</a></li>
                 </ul>
             </Nav>
         </Wrapper>
