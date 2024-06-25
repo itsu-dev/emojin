@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Interpreter from "./interperter/interpreter.ts";
 import Header from "./components/Header.tsx";
 import Editor from "./components/Editor.tsx";
@@ -72,6 +72,12 @@ export default function App() {
                 break;
         }
     }
+
+    useEffect(() => {
+        if (window.innerWidth < 768) {
+            alert("Oops! emojin は絶賛開発中で、スマートフォンにはまだ対応しておりません...😢　デスクトップからのアクセスをお願いします！");
+        }
+    }, []);
 
     return (
         <Wrapper>
