@@ -67,7 +67,7 @@ enum Tokens {
     THINKING_FACE = '🤔',
     MONOCLE_FACE = '🧐',
     ASTONISHED_FACE = '☹️',
-    SPEECH_BALLOON = '💬',
+    LOUD_SPEAKER = '📢',
     RECYCLE = '♻️',
     CURL = '➰',
     CYCLONE = '🌀',
@@ -240,7 +240,7 @@ export default function Lexer(program: string): ReturnType {
             } else if (char === Tokens.ASTONISHED_FACE) {
                 createToken(TokenType.ELSE, position, column, line);
                 column++;
-            } else if (char === Tokens.SPEECH_BALLOON) {
+            } else if (char === Tokens.LOUD_SPEAKER) {
                 createToken(TokenType.PRINT, position, column, line);
                 column++;
             } else if (char === Tokens.TAG) {
