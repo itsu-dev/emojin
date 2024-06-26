@@ -57,7 +57,7 @@ enum Tokens {
     BALANCE_SCALE = '⚖️',
     LPAREN = '(',
     RPAREN = ')',
-    DOUBLE_QUOTE = '"',
+    SPEECH_BALLOON = '💬',
     SIGN = '🪧',
     SOON = '🔜',
     END = '🔚',
@@ -270,10 +270,10 @@ export default function Lexer(program: string): ReturnType {
                 }
                 createToken(TokenType.NUMBER, position, column, line, value);
                 column += value.length;
-            } else if (char === Tokens.DOUBLE_QUOTE) {
+            } else if (char === Tokens.SPEECH_BALLOON) {
                 let c = segments[++position].segment;
                 let value = '';
-                while (c !== Tokens.DOUBLE_QUOTE) {
+                while (c !== Tokens.SPEECH_BALLOON) {
                     if (position + 1 === segments.length) {
                         break;
                     }
