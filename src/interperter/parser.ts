@@ -415,7 +415,7 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return assignStatement();
         }
 
-        return undefined;
+        throw new ParserError(peek(), "文", "予期しないトークンです。繰り返し構文、条件分岐構文、出力構文、代入構文のいずれかが必要です");
     }
 
     const block = (statementType: string, message: string): Statement[] => {
@@ -443,6 +443,8 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             const stmt = statement();
             if (stmt) {
                 statements.push(stmt);
+            } else {
+                return [];
             }
         }
         return statements;
