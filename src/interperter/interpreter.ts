@@ -13,7 +13,7 @@ import Parser, {
 
 class RuntimeError extends Error {
     constructor(token: Token | null, message: string) {
-        super(`${token ? `行 ${token.line}, 列 ${token.column}：` : ""}${message}`);
+        super(`[実行時エラー] ${token ? `行 ${token.line}, 列 ${token.column}：` : ""}${message}`);
         this.name = "RuntimeError";
     }
 }

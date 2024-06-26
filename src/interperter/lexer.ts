@@ -290,6 +290,7 @@ export default function Lexer(program: string): ReturnType {
 
                     c = segments[++position].segment;
                 }
+                line++;
                 column = 1;
             } else if (char !== ' ' && char !== '\n' && !isToken(char)) {
                 let value = char;

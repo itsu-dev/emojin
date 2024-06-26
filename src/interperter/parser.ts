@@ -171,7 +171,7 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return expr;
         }
 
-        throw new ParserError(previous(), "式", `予期しないトークンです`);
+        throw new ParserError(previous(), "式", `予期しないトークンです。数値や変数名などのリテラルが抜けている可能性があります`);
     }
 
     const unary = (): Node => {
