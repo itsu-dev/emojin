@@ -9,7 +9,7 @@ export type Node = {
 
 export type BinaryNode = {
     type: "binary";
-    operator: TokenType.PLUS | TokenType.MINUS | TokenType.MUL | TokenType.DIV | TokenType.MOD | TokenType.EQUAL | TokenType.AND | TokenType.OR;
+    operator: TokenType.PLUS | TokenType.MINUS | TokenType.MUL | TokenType.DIV | TokenType.MOD | TokenType.EQUAL | TokenType.AND | TokenType.OR | TokenType.LT | TokenType.LE | TokenType.GT | TokenType.GE;
     left: Node;
     right: Node;
 } & Node;

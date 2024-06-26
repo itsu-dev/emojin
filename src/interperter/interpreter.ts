@@ -49,6 +49,14 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                     return left % right;
                 case TokenType.EQUAL:
                     return left == right;
+                case TokenType.LT:
+                    return left < right;
+                case TokenType.LE:
+                    return left <= right;
+                case TokenType.GT:
+                    return left > right;
+                case TokenType.GE:
+                    return left >= right;
             }
         } else if (typeof left === "boolean" && typeof right === "boolean") {
             switch (node.operator) {

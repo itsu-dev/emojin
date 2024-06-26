@@ -187,8 +187,14 @@ export default function Lexer(program: string): ReturnType {
                 createToken(TokenType.AND, position, column, line);
                 column++;
             } else if (char === Tokens.BALANCE_SCALE) {
-                createToken(TokenType.EQUAL, position, column, line);
-                column++;
+                if (position + 1 !== segments.length && segments[position + 1].segment === Tokens.RIGHT_HAND) {
+                    createToken(TokenType.LE, position, column, line);
+                    position++;
+                    column += 2;
+                } else {
+                    createToken(TokenType.EQUAL, position, column, line);
+                    column++;
+                }
             } else if (char === Tokens.LPAREN) {
                 createToken(TokenType.LPAREN, position, column, line);
                 column++;
@@ -196,21 +202,17 @@ export default function Lexer(program: string): ReturnType {
                 createToken(TokenType.RPAREN, position, column, line);
                 column++;
             } else if (char === Tokens.LEFT_HAND) {
-                if (position + 1 !== segments.length && segments[++position].segment === Tokens.BALANCE_SCALE) {
-                    createToken(TokenType.LE, position, column, line);
-                    column += 2;
-                } else {
-                    createToken(TokenType.LT, position, column, line);
-                    column++;
-                }
-            } else if (char === Tokens.RIGHT_HAND) {
-                if (position + 1 !== segments.length && segments[++position].segment === Tokens.BALANCE_SCALE) {
+                if (position + 1 !== segments.length && segments[position + 1].segment === Tokens.BALANCE_SCALE) {
                     createToken(TokenType.GE, position, column, line);
+                    position++;
                     column += 2;
                 } else {
                     createToken(TokenType.GT, position, column, line);
                     column++;
                 }
+            } else if (char === Tokens.RIGHT_HAND) {
+                createToken(TokenType.LT, position, column, line);
+                column++;
             } else if (char === Tokens.STOP) {
                 createToken(TokenType.SEMICOLON, position, column, line);
                 column++;
