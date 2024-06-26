@@ -72,7 +72,7 @@ export default function Help() {
         <Wrapper>
             <Title>💡&nbsp;ヘルプ</Title>
             <Container ref={ref}>
-                <p>emojin 1.1.0
+                <p>emojin 2.0.0
                     は絵文字で記述する、まったく新しいプログラミング言語です。文字列を除くほとんどの記号やキーワードなどが絵文字に置き換わっています。</p>
 
                 <h3>コメント</h3>
