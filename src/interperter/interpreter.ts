@@ -1,14 +1,15 @@
 import Lexer, {Token, TokenType} from "./lexer.ts";
 import Parser, {
+    AssignNode,
     AssignStatement,
-    BinaryNode,
+    BinaryNode, ExpressionStatement,
     ForStatement,
     IfStatement,
     LiteralNode,
     Node,
     PrintStatement,
     Statement,
-    UnaryNode
+    UnaryNode, WhileStatement
 } from "./parser.ts";
 
 class RuntimeError extends Error {
@@ -85,6 +86,18 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
         }
     }
 
+    const interpretAssignNode = (node: AssignNode): string | number | boolean | null => {
+        const name = node.variableName;
+        if (Object.keys(variables).indexOf(name) === -1) {
+            throw new RuntimeError(node.token, `変数 ${name} が存在しません`);
+        }
+
+        const value = interpretNode(node.value);
+        variables[name] = value;
+
+        return value;
+    }
+
     const interpretNode = (node: Node): string | number | boolean | null => {
         switch (node.type) {
             case "string":
@@ -104,6 +117,8 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                 return interpretBinary(node as BinaryNode);
             case "unary":
                 return interpretUnary(node as UnaryNode);
+            case "assign":
+                return interpretAssignNode(node as AssignNode);
         }
     }
 
@@ -152,6 +167,16 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
         variables[statement.variableName] = value;
     }
 
+    const interpretWhile = (statement: WhileStatement) => {
+        while (interpretNode(statement.condition)) {
+            interpret(statement.body);
+        }
+    }
+
+    const interpretExpression = (statement: ExpressionStatement) => {
+        interpretNode(statement.expression);
+    }
+
     const interpret = (statements: Statement[]) => {
         try {
             for (const statement of statements) {
@@ -167,6 +192,12 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                         break;
                     case "assign":
                         interpretAssign(statement as AssignStatement);
+                        break;
+                    case "while":
+                        interpretWhile(statement as WhileStatement);
+                        break;
+                    case "expression":
+                        interpretExpression((statement as ExpressionStatement));
                 }
             }
         } catch (e) {

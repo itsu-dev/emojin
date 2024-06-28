@@ -1,6 +1,6 @@
 import {Token, TokenType} from "./lexer.ts";
 
-export type NodeType = "binary" | "unary" | "number" | "string" | "identifier" | "true" | "false" | "null";
+export type NodeType = "binary" | "unary" | "assign" | "number" | "string" | "identifier" | "true" | "false" | "null";
 
 export type Node = {
     type: NodeType;
@@ -25,7 +25,14 @@ export type LiteralNode = {
     value: number | string | boolean | null;
 } & Node;
 
-export type StatementType = "for" | "print" | "if" | "assign";
+export type AssignNode = {
+    type: "assign";
+    operator: TokenType.ASSIGN;
+    variableName: string;
+    value: Node;
+} & Node;
+
+export type StatementType = "for" | "print" | "if" | "assign" | "while" | "expression";
 
 export type Statement = {
     type: StatementType;
@@ -47,6 +54,12 @@ export type ForStatement = {
     body: Statement[];
 } & Statement;
 
+export type WhileStatement = {
+    type: "while";
+    condition: Node;
+    body: Statement[];
+} & Statement;
+
 export type IfStatement = {
     type: "if";
     condition: Node;
@@ -59,6 +72,12 @@ export type PrintStatement = {
     type: "print";
     value: Node;
 } & Statement;
+
+export type ExpressionStatement = {
+    type: "expression";
+    expression: Node;
+} & Statement;
+
 
 class ParserError extends Error {
     constructor(token: Token | null, type: string, message: string) {
@@ -76,6 +95,10 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
 
     const peek = () => {
         return tokens[i];
+    }
+
+    const peekNext = () => {
+        return tokens[i + 1];
     }
 
     const isEnd = () => {
@@ -98,6 +121,13 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return false;
         }
         return peek().type === type;
+    }
+
+    const checkNext = (type: TokenType): boolean => {
+        if (peekNext().type === TokenType.EOF) {
+            return false;
+        }
+        return peekNext().type === type;
     }
 
     const match = (...types: TokenType[]): boolean => {
@@ -287,8 +317,26 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         return left;
     }
 
-    const expression = (): Node => {
+    const assignment = (): Node => {
+        if (checkNext(TokenType.ASSIGN)) {
+            const variableNameToken = peek();
+            advance();
+            advance();
+            const value = expression();
+            return {
+                type: "assign",
+                operator: TokenType.ASSIGN,
+                variableName: variableNameToken.value!,
+                value,
+                token: variableNameToken,
+            } as AssignNode;
+        }
+
         return or();
+    }
+
+    const expression = (): Node => {
+        return assignment();
     }
 
     const forStatement = (): ForStatement => {
@@ -318,6 +366,18 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             end,
             body,
             token: variable,
+        }
+    }
+
+    const whileStatement = (): WhileStatement => {
+        const condition = expression();
+        const body = block("繰り返し構文", "条件式の次（ブロックの開始）には「🔜」が必要です");
+
+        return {
+            type: "while",
+            condition,
+            body,
+            token: condition.token,
         }
     }
 
@@ -404,6 +464,20 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         }
     }
 
+    const expressionStatement = (): ExpressionStatement => {
+        const expr = expression();
+
+        if (!match(TokenType.SEMICOLON)) {
+            throw new ParserError(previous(), "式文", "式の次（文末）には「⛔️」が必要です");
+        }
+
+        return {
+            type: "expression",
+            expression: expr,
+            token: expr.token,
+        }
+    }
+
     const statement = (): Statement | undefined => {
         if (match(TokenType.FOR)) {
             return forStatement();
@@ -413,9 +487,11 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return printStatement();
         } else if (match(TokenType.TAG)) {
             return assignStatement();
+        } else if (match(TokenType.WHILE)) {
+            return whileStatement();
+        } else {
+            return expressionStatement();
         }
-
-        throw new ParserError(peek(), "文", "予期しないトークンです。繰り返し構文、条件分岐構文、出力構文、代入構文のいずれかが必要です");
     }
 
     const block = (statementType: string, message: string): Statement[] => {
