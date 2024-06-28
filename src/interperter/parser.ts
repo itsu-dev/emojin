@@ -317,13 +317,6 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         return left;
     }
 
-    /*
-🔖😇🫵0️⃣⛔️
-🔁😇👈1️⃣0️⃣🔜
-  📢😇⛔️
-  😇🫵😇➕1️⃣⛔️
-🔚
-     */
     const assignment = (): Node => {
         if (checkNext(TokenType.ASSIGN)) {
             const variableNameToken = peek();
