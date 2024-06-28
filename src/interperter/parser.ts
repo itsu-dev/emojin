@@ -25,7 +25,7 @@ export type LiteralNode = {
     value: number | string | boolean | null;
 } & Node;
 
-export type StatementType = "for" | "print" | "if" | "assign" | "while";
+export type StatementType = "for" | "print" | "if" | "assign" | "while" | "expression";
 
 export type Statement = {
     type: StatementType;
@@ -65,6 +65,12 @@ export type PrintStatement = {
     type: "print";
     value: Node;
 } & Statement;
+
+export type ExpressionStatement = {
+    type: "expression";
+    expression: Node;
+} & Statement;
+
 
 class ParserError extends Error {
     constructor(token: Token | null, type: string, message: string) {
@@ -422,6 +428,20 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         }
     }
 
+    const expressionStatement = (): ExpressionStatement => {
+        const expr = expression();
+
+        if (!match(TokenType.SEMICOLON)) {
+            throw new ParserError(previous(), "式文", "式の次（文末）には「⛔️」が必要です");
+        }
+
+        return {
+            type: "expression",
+            expression: expr,
+            token: expr.token,
+        }
+    }
+
     const statement = (): Statement | undefined => {
         if (match(TokenType.FOR)) {
             return forStatement();
@@ -433,9 +453,9 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return assignStatement();
         } else if (match(TokenType.WHILE)) {
             return whileStatement();
+        } else {
+            return expressionStatement();
         }
-
-        throw new ParserError(peek(), "文", "予期しないトークンです。繰り返し構文、条件分岐構文、出力構文、代入構文のいずれかが必要です");
     }
 
     const block = (statementType: string, message: string): Statement[] => {

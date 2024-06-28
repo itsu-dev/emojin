@@ -1,7 +1,7 @@
 import Lexer, {Token, TokenType} from "./lexer.ts";
 import Parser, {
     AssignStatement,
-    BinaryNode,
+    BinaryNode, ExpressionStatement,
     ForStatement,
     IfStatement,
     LiteralNode,
@@ -158,6 +158,10 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
         }
     }
 
+    const interpretExpression = (statement: ExpressionStatement) => {
+        interpretNode(statement.expression);
+    }
+
     const interpret = (statements: Statement[]) => {
         try {
             for (const statement of statements) {
@@ -176,6 +180,9 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                         break;
                     case "while":
                         interpretWhile(statement as WhileStatement);
+                        break;
+                    case "expression":
+                        interpretExpression((statement as ExpressionStatement));
                 }
             }
         } catch (e) {
