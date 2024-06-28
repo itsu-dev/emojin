@@ -45,8 +45,20 @@ export default function App() {
   🔚
 🔚`;
 
+    const DEFAULT_LOGS: ConsoleText[] = [
+        {type: "info", text: "👋 emojin へようこそ！"},
+        {type: "info", text: "プログラムを入力して、右上の「🌀 実行」ボタンを押してください！ヘルプは右側を参照してください。"},
+        {type: "info", text: "-------------------------------------------------------"},
+        {type: "info", text: "🎉 emojin 2.1.0 リリース！ 🎉"},
+        {type: "info", text: "✅ while 構文（🔁）のサポート"},
+        {type: "info", text: "✅ 変数代入式のサポート"},
+        {type: "info", text: "✅ 式文のサポート"},
+        {type: "info", text: "💡 詳しい使用方法はヘルプをご覧ください。"},
+        {type: "info", text: "-------------------------------------------------------"},
+    ]
+
     const [program, setProgram] = useState(INITIAL_PROGRAM);
-    const [logs, setLogs] = useState<ConsoleText[]>([]);
+    const [logs, setLogs] = useState<ConsoleText[]>(DEFAULT_LOGS);
 
     const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setProgram(event.target.value);
