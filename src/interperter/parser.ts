@@ -25,7 +25,7 @@ export type LiteralNode = {
     value: number | string | boolean | null;
 } & Node;
 
-export type StatementType = "for" | "print" | "if" | "assign";
+export type StatementType = "for" | "print" | "if" | "assign" | "while";
 
 export type Statement = {
     type: StatementType;
@@ -44,6 +44,12 @@ export type ForStatement = {
     variable: string;
     start: Node;
     end: Node;
+    body: Statement[];
+} & Statement;
+
+export type WhileStatement = {
+    type: "while";
+    condition: Node;
     body: Statement[];
 } & Statement;
 
@@ -321,6 +327,18 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         }
     }
 
+    const whileStatement = (): WhileStatement => {
+        const condition = expression();
+        const body = block("繰り返し構文", "条件式の次（ブロックの開始）には「🔜」が必要です");
+
+        return {
+            type: "while",
+            condition,
+            body,
+            token: condition.token,
+        }
+    }
+
     const ifStatement = (): IfStatement => {
         const condition = expression();
         const body = block("条件分岐構文", "「🤔」節の条件式の次（ブロックの開始）には「🔜」が必要です");
@@ -413,6 +431,8 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return printStatement();
         } else if (match(TokenType.TAG)) {
             return assignStatement();
+        } else if (match(TokenType.WHILE)) {
+            return whileStatement();
         }
 
         throw new ParserError(peek(), "文", "予期しないトークンです。繰り返し構文、条件分岐構文、出力構文、代入構文のいずれかが必要です");

@@ -8,7 +8,7 @@ import Parser, {
     Node,
     PrintStatement,
     Statement,
-    UnaryNode
+    UnaryNode, WhileStatement
 } from "./parser.ts";
 
 class RuntimeError extends Error {
@@ -152,6 +152,12 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
         variables[statement.variableName] = value;
     }
 
+    const interpretWhile = (statement: WhileStatement) => {
+        while (interpretNode(statement.condition)) {
+            interpret(statement.body);
+        }
+    }
+
     const interpret = (statements: Statement[]) => {
         try {
             for (const statement of statements) {
@@ -167,6 +173,9 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                         break;
                     case "assign":
                         interpretAssign(statement as AssignStatement);
+                        break;
+                    case "while":
+                        interpretWhile(statement as WhileStatement);
                 }
             }
         } catch (e) {
