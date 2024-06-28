@@ -1,6 +1,6 @@
 import {Token, TokenType} from "./lexer.ts";
 
-export type NodeType = "binary" | "unary" | "number" | "string" | "identifier" | "true" | "false" | "null";
+export type NodeType = "binary" | "unary" | "assign" | "number" | "string" | "identifier" | "true" | "false" | "null";
 
 export type Node = {
     type: NodeType;
@@ -23,6 +23,13 @@ export type UnaryNode = {
 export type LiteralNode = {
     type: "number" | "string" | "identifier" | "true" | "false" | "null";
     value: number | string | boolean | null;
+} & Node;
+
+export type AssignNode = {
+    type: "assign";
+    operator: TokenType.ASSIGN;
+    variableName: string;
+    value: Node;
 } & Node;
 
 export type StatementType = "for" | "print" | "if" | "assign" | "while" | "expression";
@@ -90,6 +97,10 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         return tokens[i];
     }
 
+    const peekNext = () => {
+        return tokens[i + 1];
+    }
+
     const isEnd = () => {
         return peek().type === TokenType.EOF;
     }
@@ -110,6 +121,13 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             return false;
         }
         return peek().type === type;
+    }
+
+    const checkNext = (type: TokenType): boolean => {
+        if (peekNext().type === TokenType.EOF) {
+            return false;
+        }
+        return peekNext().type === type;
     }
 
     const match = (...types: TokenType[]): boolean => {
@@ -299,8 +317,33 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
         return left;
     }
 
-    const expression = (): Node => {
+    /*
+🔖😇🫵0️⃣⛔️
+🔁😇👈1️⃣0️⃣🔜
+  📢😇⛔️
+  😇🫵😇➕1️⃣⛔️
+🔚
+     */
+    const assignment = (): Node => {
+        if (checkNext(TokenType.ASSIGN)) {
+            const variableNameToken = peek();
+            advance();
+            advance();
+            const value = expression();
+            return {
+                type: "assign",
+                operator: TokenType.ASSIGN,
+                variableName: variableNameToken.value!,
+                value,
+                token: variableNameToken,
+            } as AssignNode;
+        }
+
         return or();
+    }
+
+    const expression = (): Node => {
+        return assignment();
     }
 
     const forStatement = (): ForStatement => {

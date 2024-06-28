@@ -1,5 +1,6 @@
 import Lexer, {Token, TokenType} from "./lexer.ts";
 import Parser, {
+    AssignNode,
     AssignStatement,
     BinaryNode, ExpressionStatement,
     ForStatement,
@@ -85,6 +86,18 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
         }
     }
 
+    const interpretAssignNode = (node: AssignNode): string | number | boolean | null => {
+        const name = node.variableName;
+        if (Object.keys(variables).indexOf(name) === -1) {
+            throw new RuntimeError(node.token, `変数 ${name} が存在しません`);
+        }
+
+        const value = interpretNode(node.value);
+        variables[name] = value;
+
+        return value;
+    }
+
     const interpretNode = (node: Node): string | number | boolean | null => {
         switch (node.type) {
             case "string":
@@ -104,6 +117,8 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
                 return interpretBinary(node as BinaryNode);
             case "unary":
                 return interpretUnary(node as UnaryNode);
+            case "assign":
+                return interpretAssignNode(node as AssignNode);
         }
     }
 
