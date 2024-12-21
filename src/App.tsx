@@ -1,10 +1,11 @@
 import {useEffect, useState} from "react";
-import Interpreter from "./interperter/interpreter.ts";
 import Header from "./components/Header.tsx";
 import Editor from "./components/Editor.tsx";
 import styled from "styled-components";
 import Console, {ConsoleText} from "./components/Console.tsx";
 import Help from "./components/Help.tsx";
+import JavaCompilerMain from "./interperter/compiler/java/JavaCompilerMain.ts";
+import Interpreter from "./interperter/interpreter.ts";
 
 const Wrapper = styled.div`
     width: 100%;
@@ -77,10 +78,32 @@ export default function App() {
         Interpreter(program, stdOut, stdErr).launch();
     }
 
-    const onClickButton = (type: "run") => {
+    const compile = () => {
+        setLogs([]);
+        stdOut("☕️Java8 向けにコンパイル中...コンパイル情報は開発者ツールに表示されています。");
+        const time = new Date().getTime();
+
+        const buffer = JavaCompilerMain().compile(program, stdErr);
+        const blob = new Blob([buffer], {type: "application/octet-stream"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "EmojinMain.class";
+        a.click();
+
+        stdOut(`✅コンパイル完了！（${new Date().getTime() - time}ms）`);
+        stdOut("-------------------------------------------------------");
+        stdOut("📝EmojinMain.class がダウンロードされました。お使いのデバイスに Java8 以降がインストールされている場合、EmojinMain.class の実行が可能です。");
+        stdOut("📝java -noverify EmojinMain で実行してください。");
+    }
+
+    const onClickButton = (type: "run" | "compile") => {
         switch (type) {
             case "run":
                 run();
+                break;
+            case "compile":
+                compile();
                 break;
         }
     }
