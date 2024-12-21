@@ -41,6 +41,7 @@ const Header = styled.header`
 const Controls = styled.div`
     display: flex;
     align-items: center;
+    gap: 0.5rem;
 `;
 
 const Button = styled.button`
@@ -54,7 +55,7 @@ const Button = styled.button`
     color: #4B5261;
     cursor: pointer;
     transition: background-color 0.3s;
-    
+
     &:hover {
         background-color: #D5D9E0;
     }
@@ -63,7 +64,7 @@ const Button = styled.button`
 type Props = {
     value: string,
     onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void,
-    onClickButton: (type: "run") => void,
+    onClickButton: (type: "run" | "compile") => void,
 }
 
 export default function Editor({value, onChange, onClickButton}: Props) {
@@ -72,6 +73,7 @@ export default function Editor({value, onChange, onClickButton}: Props) {
             <Header>
                 <Title>✏️&nbsp;エディタ</Title>
                 <Controls>
+                    <Button onClick={() => onClickButton("compile")}>☕️&nbsp;Java コンパイル</Button>
                     <Button onClick={() => onClickButton("run")}>🌀&nbsp;実行</Button>
                 </Controls>
             </Header>

@@ -101,7 +101,8 @@ export default function Interpreter(program: string, stdOut: (text: string) => v
     const interpretNode = (node: Node): string | number | boolean | null => {
         switch (node.type) {
             case "string":
-            case "number":
+            case "integer":
+            case "double":
             case "null":
             case "true":
             case "false":

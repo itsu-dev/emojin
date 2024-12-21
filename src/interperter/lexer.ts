@@ -1,5 +1,6 @@
 export enum TokenType {
-    NUMBER,
+    INTEGER,
+    DOUBLE,
     STRING,
     IDENTIFIER,
     PLUS,
@@ -264,11 +265,15 @@ export default function Lexer(program: string): ReturnType {
             } else if (isDigit(char)) {
                 let c = segments[position].segment;
                 let value = toNumberString(c);
+                let type = TokenType.INTEGER;
                 while (position + 1 !== segments.length && (isDigit(segments[position + 1].segment) || segments[position + 1].segment === Tokens.DOT)) {
+                    if (segments[position + 1].segment === Tokens.DOT) {
+                        type = TokenType.DOUBLE;
+                    }
                     c = segments[++position].segment;
                     value += toNumberString(c);
                 }
-                createToken(TokenType.NUMBER, position, column, line, value);
+                createToken(type, position, column, line, value);
                 column += value.length;
             } else if (char === Tokens.SPEECH_BALLOON) {
                 let c = segments[++position].segment;

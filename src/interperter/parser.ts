@@ -1,6 +1,6 @@
 import {Token, TokenType} from "./lexer.ts";
 
-export type NodeType = "binary" | "unary" | "assign" | "number" | "string" | "identifier" | "true" | "false" | "null";
+export type NodeType = "binary" | "unary" | "assign" | "integer" | "double" | "string" | "identifier" | "true" | "false" | "null";
 
 export type Node = {
     type: NodeType;
@@ -21,7 +21,7 @@ export type UnaryNode = {
 } & Node;
 
 export type LiteralNode = {
-    type: "number" | "string" | "identifier" | "true" | "false" | "null";
+    type: "integer" | "double" | "string" | "identifier" | "true" | "false" | "null";
     value: number | string | boolean | null;
 } & Node;
 
@@ -142,7 +142,7 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
 
     const primary = (): Node => {
         const checkNext = () => {
-            if (match(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE, TokenType.NULL, TokenType.IDENTIFIER)) {
+            if (match(TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.TRUE, TokenType.FALSE, TokenType.NULL, TokenType.IDENTIFIER)) {
                 throw new ParserError(previous(), "式", "不正な式です。単項が並ぶことはありません。演算子などが抜けている可能性があります");
             }
         }
@@ -170,10 +170,17 @@ export default function Parser(tokens: Token[], onError: (text: string) => void)
             } as LiteralNode;
         }
 
-        if (match(TokenType.NUMBER)) {
+        if (match(TokenType.INTEGER)) {
             checkNext();
             return {
-                type: "number",
+                type: "integer",
+                value: parseInt(previous().value!),
+                token: previous(),
+            } as LiteralNode;
+        } else if (match(TokenType.DOUBLE)) {
+            checkNext();
+            return {
+                type: "double",
                 value: parseFloat(previous().value!),
                 token: previous(),
             } as LiteralNode;
